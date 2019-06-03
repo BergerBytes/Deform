@@ -65,7 +65,7 @@ namespace Deform
 
 		private void Update ()
 		{
-			speedOffset += speed * Time.deltaTime;
+			speedOffset += Speed * Time.deltaTime;
 		}
 
 		public float GetTotalOffset ()
@@ -73,9 +73,9 @@ namespace Deform
 			return Offset + speedOffset;
 		}
 
-		public override JobHandle Process (MeshData data, JobHandle dependency = default (JobHandle))
+		public override JobHandle Process (MeshData data, JobHandle dependency = default)
 		{
-			if (Amplitude == 0f)
+			if (Mathf.Approximately (Amplitude, 0f))
 				return dependency;
 
 			var meshToAxis = DeformerUtils.GetMeshToAxisSpace (Axis, data.Target.GetTransform ());
@@ -93,7 +93,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct SineJob : IJobParallelFor
+		public struct SineJob : IJobParallelFor
 		{
 			public float frequency;
 			public float magnitude;

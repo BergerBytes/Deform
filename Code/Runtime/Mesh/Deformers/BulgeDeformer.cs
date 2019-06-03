@@ -51,7 +51,7 @@ namespace Deform
 
 		public override JobHandle Process (MeshData data, JobHandle dependency = default (JobHandle))
 		{
-			if (top == bottom || Factor == 0f)
+			if (Mathf.Approximately (top, bottom) || Mathf.Approximately (Factor, 0f))
 				return dependency;
 
 			var meshToAxis = DeformerUtils.GetMeshToAxisSpace (Axis, data.Target.GetTransform ());
@@ -69,7 +69,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct BulgeJob : IJobParallelFor
+		public struct BulgeJob : IJobParallelFor
 		{
 			public float factor;
 			public float top;

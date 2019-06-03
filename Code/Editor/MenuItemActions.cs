@@ -20,7 +20,7 @@ namespace DeformEditor
 		}
 
 		[MenuItem ("Tools/Deform/Actions/Strip All Deformables", priority = 10101)]
-		public static void StripAllDeformablesFromMesh ()
+		public static void StripAllDeformablesFromMeshes ()
 		{
 			var deformables = GameObject.FindObjectsOfType<Deformable> ();
 			Undo.SetCurrentGroupName ("Stripped All Deformables");
@@ -35,7 +35,7 @@ namespace DeformEditor
 		}
 
 		[MenuItem ("Tools/Deform/Actions/Strip Selected Deformables", priority = 10102)]
-		public static void StripDeformableFromMesh ()
+		public static void StripSelectedDeformablesFromMeshes ()
 		{
 			var selections = Selection.gameObjects;
 			Undo.SetCurrentGroupName ("Stripped Selected Deformables");
@@ -79,6 +79,12 @@ namespace DeformEditor
 			}
 
 			Selection.objects = newSelection.ToArray ();
+		}
+
+		[MenuItem ("Tools/Deform/Report Bug", priority = 10203)]
+		public static void ReportBug ()
+		{
+			Application.OpenURL ("https://github.com/keenanwoodall/Deform/issues/new");
 		}
 	}
 }

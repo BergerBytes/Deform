@@ -59,7 +59,7 @@ namespace Deform
 
 		private void Update ()
 		{
-			speedOffset += speed * Time.deltaTime;
+			speedOffset += Speed * Time.deltaTime;
 		}
 
 		public override JobHandle Process (MeshData data, JobHandle dependency = default)
@@ -86,7 +86,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct WaveJob : IJobParallelFor
+		public struct WaveJob : IJobParallelFor
 		{
 			public float waveLength;
 			public float steepness;

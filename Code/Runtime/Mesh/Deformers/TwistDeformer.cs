@@ -10,8 +10,6 @@ namespace Deform
 	[Deformer (Name = "Twist", Description = "Rotates vertices around an axis based on distance along that axis", XRotation = -90f, Type = typeof (TwistDeformer))]
 	public class TwistDeformer : Deformer, IFactor
 	{
-		private const float MIN_RANGE = 0.001f;
-
 		public float StartAngle
 		{
 			get => startAngle;
@@ -77,7 +75,7 @@ namespace Deform
 
 		public override JobHandle Process (MeshData data, JobHandle dependency = default)
 		{
-			if (Factor == 0f || Mathf.Abs (Top - Bottom) < MIN_RANGE)
+			if (Mathf.Approximately (Factor, 0f) || Mathf.Approximately (Top, Bottom))
 				return dependency;
 
 			var meshToAxis = DeformerUtils.GetMeshToAxisSpace (Axis, data.Target.GetTransform ());
@@ -111,7 +109,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct UnlimitedTwistJob : IJobParallelFor
+		public struct UnlimitedTwistJob : IJobParallelFor
 		{
 			public float startAngle;
 			public float endAngle;
@@ -140,7 +138,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct LimitedTwistJob : IJobParallelFor
+		public struct LimitedTwistJob : IJobParallelFor
 		{
 			public float startAngle;
 			public float endAngle;

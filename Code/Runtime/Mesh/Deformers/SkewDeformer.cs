@@ -42,7 +42,7 @@ namespace Deform
 		}
 
 		[SerializeField, HideInInspector] private float factor;
-		[SerializeField, HideInInspector] private BoundsMode mode= BoundsMode.Unlimited;
+		[SerializeField, HideInInspector] private BoundsMode mode = BoundsMode.Unlimited;
 		[SerializeField, HideInInspector] private float top = 0.5f;
 		[SerializeField, HideInInspector] private float bottom = -0.5f;
 		[SerializeField, HideInInspector] private Transform axis;
@@ -51,7 +51,7 @@ namespace Deform
 
 		public override JobHandle Process (MeshData data, JobHandle dependency = default (JobHandle))
 		{
-			if (Factor == 0f)
+			if (Mathf.Approximately (Factor, 0f))
 				return dependency;
 
 			var meshToAxis = DeformerUtils.GetMeshToAxisSpace (Axis, data.Target.GetTransform ());
@@ -59,6 +59,7 @@ namespace Deform
 			switch (Mode)
 			{
 				default:
+				case BoundsMode.Unlimited:
 					return new UnlimitedSkewJob
 					{
 						factor = Factor,
@@ -70,8 +71,8 @@ namespace Deform
 					return new LimitedSkewJob
 					{
 						factor = Factor,
-						top = top,
-						bottom = bottom,
+						top = Top,
+						bottom = Bottom,
 						meshToAxis = meshToAxis,
 						axisToMesh = meshToAxis.inverse,
 						vertices = data.DynamicNative.VertexBuffer
@@ -80,7 +81,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct UnlimitedSkewJob : IJobParallelFor
+		public struct UnlimitedSkewJob : IJobParallelFor
 		{
 			public float factor;
 			public float4x4 meshToAxis;
@@ -97,7 +98,7 @@ namespace Deform
 			}
 		}
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct LimitedSkewJob : IJobParallelFor
+		public struct LimitedSkewJob : IJobParallelFor
 		{
 			public float factor;
 			public float top;

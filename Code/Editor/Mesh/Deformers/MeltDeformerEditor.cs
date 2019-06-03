@@ -8,7 +8,7 @@ namespace DeformEditor
 	[CustomEditor (typeof (MeltDeformer)), CanEditMultipleObjects]
 	public class MeltDeformerEditor : DeformerEditor
 	{
-		private class Content
+		private static class Content
 		{
 			public static readonly GUIContent Factor = DeformEditorGUIUtility.DefaultContent.Factor;
 			public static readonly GUIContent Falloff = DeformEditorGUIUtility.DefaultContent.Falloff;
@@ -60,7 +60,7 @@ namespace DeformEditor
 		}
 
 		private Properties properties;
-		private VerticalBoundsHandle boundsHandle = new VerticalBoundsHandle ();
+		private readonly VerticalBoundsHandle boundsHandle = new VerticalBoundsHandle ();
 
 		protected override void OnEnable ()
 		{
@@ -68,8 +68,8 @@ namespace DeformEditor
 
 			properties = new Properties (serializedObject);
 
-			boundsHandle.handleCapFunction = DeformHandles.HandleCapFunction;
-			boundsHandle.drawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
+			boundsHandle.HandleCapFunction = DeformHandles.HandleCapFunction;
+			boundsHandle.DrawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
 		}
 
 		public override void OnInspectorGUI ()
@@ -123,13 +123,13 @@ namespace DeformEditor
 
 			DrawRadiusHandle (melt);
 
-			boundsHandle.handleColor = DeformEditorSettings.SolidHandleColor;
-			boundsHandle.screenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
+			boundsHandle.HandleColor = DeformEditorSettings.SolidHandleColor;
+			boundsHandle.ScreenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
 			if (boundsHandle.DrawHandle (melt.Top, melt.Bottom, melt.Axis, Vector3.forward))
 			{
 				Undo.RecordObject (melt, "Changed Bounds");
-				melt.Top = boundsHandle.top;
-				melt.Bottom = boundsHandle.bottom;
+				melt.Top = boundsHandle.Top;
+				melt.Bottom = boundsHandle.Bottom;
 			}
 
 			EditorApplication.QueuePlayerLoopUpdate ();

@@ -9,7 +9,7 @@ namespace DeformEditor
 	[CustomEditor (typeof (TwirlDeformer)), CanEditMultipleObjects]
 	public class TwirlDeformerEditor : DeformerEditor
 	{
-		private class Content
+		private static class Content
 		{
 			public static readonly GUIContent Angle = new GUIContent (text: "Angle", tooltip: "How many degrees each vertice will rotate around the axis based on distance between the inner and outer bounds.");
 			public static readonly GUIContent Factor = DeformEditorGUIUtility.DefaultContent.Factor;
@@ -44,8 +44,8 @@ namespace DeformEditor
 
 		private Properties properties;
 
-		private ArcHandle angleHandle = new ArcHandle ();
-		private VerticalBoundsHandle boundsHandle = new VerticalBoundsHandle ();
+		private readonly ArcHandle angleHandle = new ArcHandle ();
+		private readonly VerticalBoundsHandle boundsHandle = new VerticalBoundsHandle ();
 
 		protected override void OnEnable ()
 		{
@@ -53,8 +53,8 @@ namespace DeformEditor
 
 			properties = new Properties (serializedObject);
 
-			boundsHandle.handleCapFunction = DeformHandles.HandleCapFunction;
-			boundsHandle.drawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
+			boundsHandle.HandleCapFunction = DeformHandles.HandleCapFunction;
+			boundsHandle.DrawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
 		}
 
 		public override void OnInspectorGUI ()
@@ -95,13 +95,13 @@ namespace DeformEditor
 
 			if (twirl.Mode == BoundsMode.Limited)
 			{
-				boundsHandle.handleColor = DeformEditorSettings.SolidHandleColor;
-				boundsHandle.screenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
+				boundsHandle.HandleColor = DeformEditorSettings.SolidHandleColor;
+				boundsHandle.ScreenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
 				if (boundsHandle.DrawHandle (twirl.Outer, twirl.Inner, twirl.Axis, Vector3.right))
 				{
 					Undo.RecordObject (twirl, "Changed Bounds");
-					twirl.Outer = boundsHandle.top;
-					twirl.Inner = boundsHandle.bottom;
+					twirl.Outer = boundsHandle.Top;
+					twirl.Inner = boundsHandle.Bottom;
 				}
 			}
 

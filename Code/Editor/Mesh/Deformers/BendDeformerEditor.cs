@@ -9,7 +9,7 @@ namespace DeformEditor
 	[CustomEditor (typeof (BendDeformer)), CanEditMultipleObjects]
 	public class BendDeformerEditor : DeformerEditor
 	{
-		private class Content
+		private static class Content
 		{
 			public static readonly GUIContent Angle = new GUIContent (text: "Angle", tooltip: "How many degrees the mesh should be bent by the time it reaches the top bounds.");
 			public static readonly GUIContent Factor = DeformEditorGUIUtility.DefaultContent.Factor;
@@ -41,8 +41,8 @@ namespace DeformEditor
 
 		private Properties properties;
 
-		private ArcHandle angleHandle = new ArcHandle ();
-		private VerticalBoundsHandle boundsHandle = new VerticalBoundsHandle ();
+		private readonly ArcHandle angleHandle = new ArcHandle ();
+		private readonly VerticalBoundsHandle boundsHandle = new VerticalBoundsHandle ();
 
 		protected override void OnEnable ()
 		{
@@ -50,8 +50,8 @@ namespace DeformEditor
 
 			properties = new Properties (serializedObject);
 
-			boundsHandle.handleCapFunction = DeformHandles.HandleCapFunction;
-			boundsHandle.drawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
+			boundsHandle.HandleCapFunction = DeformHandles.HandleCapFunction;
+			boundsHandle.DrawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
 		}
 
 		public override void OnInspectorGUI ()
@@ -85,13 +85,13 @@ namespace DeformEditor
 
 			DrawAngleHandle (bend);
 
-			boundsHandle.handleColor = DeformEditorSettings.SolidHandleColor;
-			boundsHandle.screenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
+			boundsHandle.HandleColor = DeformEditorSettings.SolidHandleColor;
+			boundsHandle.ScreenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
 			if (boundsHandle.DrawHandle (bend.Top, bend.Bottom, bend.Axis, Vector3.up))
 			{
 				Undo.RecordObject (bend, "Changed Bounds");
-				bend.Top = boundsHandle.top;
-				bend.Bottom = boundsHandle.bottom;
+				bend.Top = boundsHandle.Top;
+				bend.Bottom = boundsHandle.Bottom;
 			}
 
 			EditorApplication.QueuePlayerLoopUpdate ();
@@ -99,11 +99,6 @@ namespace DeformEditor
 
 		private void DrawAngleHandle (BendDeformer bend)
         {
-			var radiusDistanceOffset = HandleUtility.GetHandleSize (bend.Axis.position + bend.Axis.up * bend.Top) * DeformEditorSettings.ScreenspaceSliderHandleCapSize * 2f;
-
-			angleHandle.angle = bend.Angle;
-			angleHandle.radius = (bend.Top - bend.Bottom) + radiusDistanceOffset;
-			angleHandle.fillColor = Color.clear;
 
 			var handleRotation = bend.Axis.rotation * Quaternion.Euler (-90, 0f, 0f);
 			// There's some weird issue where if you pass the normal lossyScale, the handle's scale on the y axis is changed when the transform's z axis is changed.
@@ -114,7 +109,14 @@ namespace DeformEditor
 				y: bend.Axis.lossyScale.z,
 				z: bend.Axis.lossyScale.y
 			);
-			var matrix = Matrix4x4.TRS (bend.Axis.position, handleRotation, handleScale);
+
+			var matrix = Matrix4x4.TRS (bend.Axis.position + bend.Axis.up * bend.Bottom * bend.Axis.lossyScale.y, handleRotation, handleScale);
+
+			var radiusDistanceOffset = HandleUtility.GetHandleSize (bend.Axis.position + bend.Axis.up * bend.Top) * DeformEditorSettings.ScreenspaceSliderHandleCapSize * 2f;
+
+			angleHandle.angle = bend.Angle;
+			angleHandle.radius = (bend.Top - bend.Bottom) + radiusDistanceOffset;
+			angleHandle.fillColor = Color.clear;
 
 			using (new Handles.DrawingScope (DeformEditorSettings.SolidHandleColor, matrix))
 			{

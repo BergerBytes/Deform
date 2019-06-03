@@ -51,7 +51,7 @@ namespace Deform
 
 		public override JobHandle Process (MeshData data, JobHandle dependency = default (JobHandle))
 		{
-			if (Factor == 0f)
+			if (Mathf.Approximately (Factor, 0f))
 				return dependency;
 
 			var meshToAxis = DeformerUtils.GetMeshToAxisSpace (Axis, data.Target.GetTransform ());
@@ -80,7 +80,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct UnlimitedRadialSkewJob : IJobParallelFor
+		public struct UnlimitedRadialSkewJob : IJobParallelFor
 		{
 			public float factor;
 			public float4x4 meshToAxis;
@@ -97,7 +97,7 @@ namespace Deform
 			}
 		}
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct LimitedRadialSkewJob : IJobParallelFor
+		public struct LimitedRadialSkewJob : IJobParallelFor
 		{
 			public float factor;
 			public float top;

@@ -8,7 +8,7 @@ namespace DeformEditor
 	[CustomEditor (typeof (TaperDeformer)), CanEditMultipleObjects]
 	public class TaperDeformerEditor : DeformerEditor
 	{
-		private class Content
+		private static class Content
 		{
 			public static readonly GUIContent Top = new GUIContent (text: "Top", tooltip: "Vertices above this will be fully scaled by the top factor.");
 			public static readonly GUIContent Bottom = new GUIContent (text: "Bottom", tooltip: "Vertices below this will be fully scaled by the bottom factor.");
@@ -42,7 +42,7 @@ namespace DeformEditor
 		}
 
 		private Properties properties;
-		private VerticalBoundsHandle boundsHandle = new VerticalBoundsHandle ();
+		private readonly VerticalBoundsHandle boundsHandle = new VerticalBoundsHandle ();
 
 		protected override void OnEnable ()
 		{
@@ -50,8 +50,8 @@ namespace DeformEditor
 
 			properties = new Properties (serializedObject);
 
-			boundsHandle.handleCapFunction = DeformHandles.HandleCapFunction;
-			boundsHandle.drawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
+			boundsHandle.HandleCapFunction = DeformHandles.HandleCapFunction;
+			boundsHandle.DrawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
 		}
 
 		public override void OnInspectorGUI ()
@@ -79,13 +79,13 @@ namespace DeformEditor
 
 			var taper = target as TaperDeformer;
 
-			boundsHandle.handleColor = DeformEditorSettings.SolidHandleColor;
-			boundsHandle.screenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
+			boundsHandle.HandleColor = DeformEditorSettings.SolidHandleColor;
+			boundsHandle.ScreenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
 			if (boundsHandle.DrawHandle (taper.Top, taper.Bottom, taper.Axis, Vector3.forward))
 			{
 				Undo.RecordObject (taper, "Changed Bounds");
-				taper.Top = boundsHandle.top;
-				taper.Bottom = boundsHandle.bottom;
+				taper.Top = boundsHandle.Top;
+				taper.Bottom = boundsHandle.Bottom;
 			}
 
 			DrawTopFactorHandles (taper);

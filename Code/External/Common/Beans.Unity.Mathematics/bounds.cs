@@ -41,7 +41,7 @@ namespace Beans.Unity.Mathematics
 		{
 			setminmax (min (min, point), max (max, point));
 		}
-		public void enacpsulate (bounds b)
+		public void encapsulate (bounds b)
 		{
 			encapsulate (b.center - b.extents);
 			encapsulate (b.center + b.extents);
@@ -49,8 +49,7 @@ namespace Beans.Unity.Mathematics
 
 		public void expand (float amount)
 		{
-			amount *= 0.5f;
-			extents += float3 (amount);
+			extents += float3 (amount * 0.5f);
 		}
 		public void expand (float3 amount)
 		{

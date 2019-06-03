@@ -8,7 +8,7 @@ namespace DeformEditor
     [CustomEditor (typeof (SquashAndStretchDeformer)), CanEditMultipleObjects]
     public class SquashAndStretchDeformerEditor : DeformerEditor
     {
-		private class Content
+		private static class Content
 		{
 			public static readonly GUIContent Factor = DeformEditorGUIUtility.DefaultContent.Factor;
 			public static readonly GUIContent Curvature = new GUIContent (text: "Curvature", tooltip: "How much the mesh is bulged when squashed and squeezed when stretched.");
@@ -44,8 +44,8 @@ namespace DeformEditor
 
 			properties = new Properties (serializedObject);
 
-			boundsHandle.handleCapFunction = DeformHandles.HandleCapFunction;
-			boundsHandle.drawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
+			boundsHandle.HandleCapFunction = DeformHandles.HandleCapFunction;
+			boundsHandle.DrawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
 		}
 
 		public override void OnInspectorGUI()
@@ -84,13 +84,13 @@ namespace DeformEditor
 				bottomMultiplier = -1f / (stretch.Factor - 1f);
 			}
 
-			boundsHandle.handleColor = DeformEditorSettings.SolidHandleColor;
-			boundsHandle.screenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
+			boundsHandle.HandleColor = DeformEditorSettings.SolidHandleColor;
+			boundsHandle.ScreenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
 			if (boundsHandle.DrawHandle (stretch.Top * topMultiplier, stretch.Bottom * bottomMultiplier, stretch.Axis, Vector3.forward))
 			{
 				Undo.RecordObject (stretch, "Changed Bounds");
-				stretch.Top = boundsHandle.top / topMultiplier;
-				stretch.Bottom = boundsHandle.bottom / bottomMultiplier;
+				stretch.Top = boundsHandle.Top / topMultiplier;
+				stretch.Bottom = boundsHandle.Bottom / bottomMultiplier;
 			}
 
 			EditorApplication.QueuePlayerLoopUpdate ();

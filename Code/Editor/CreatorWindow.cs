@@ -12,21 +12,20 @@ namespace DeformEditor
 {
 	public class CreatorWindow : EditorWindow
 	{
-		private static List<DeformerAttribute> deformerAttributes;
-		private static List<DeformerAttribute> filteredDeformerAttributes;
+		private static List<DeformerAttribute> DeformerAttributes;
+		private List<DeformerAttribute> filteredDeformerAttributes;
 
-		private class Styles
+		private static class Styles
 		{
-			public const int MAX_LIST_BUTTON_WIDTH = 150;
-			public const int PAD_X = 5;
-			public const int PAD_Y = 2;
+			public const int MARGIN_X = 2;
+			public const int MARGIN_Y = 2;
 
-			public static GUIStyle Button;
+			public static readonly GUIStyle Button;
 
 			static Styles ()
 			{
 				Button = new GUIStyle (EditorStyles.miniButton);
-				Button.margin = new RectOffset (PAD_X, PAD_X, PAD_Y, PAD_Y);
+				Button.margin = new RectOffset (MARGIN_X, MARGIN_X, MARGIN_Y, MARGIN_Y);
 			}
 		}
 
@@ -60,7 +59,7 @@ namespace DeformEditor
 		[UnityEditor.Callbacks.DidReloadScripts]
 		private static void UpdateDeformerAttributes ()
 		{
-			deformerAttributes = GetAllDeformerAttributes ().OrderBy (x => (int)x.Category).ToList ();
+			DeformerAttributes = GetAllDeformerAttributes ().OrderBy (x => x.Name).OrderBy (x => (int)x.Category).ToList ();
 		}
 
 		private void OnEnable ()
@@ -89,9 +88,9 @@ namespace DeformEditor
 				using (var check = new EditorGUI.ChangeCheckScope ())
 				{
 					var rect = GUILayoutUtility.GetRect (1, 1, 18, 18, GUILayout.ExpandWidth (true));
-					rect.width -= Styles.PAD_X * 2;
-					rect.x += Styles.PAD_X;
-					rect.y += Styles.PAD_Y * 2;
+					rect.width -= Styles.MARGIN_X * 2;
+					rect.x += Styles.MARGIN_X;
+					rect.y += Styles.MARGIN_Y * 2;
 
 					var newSearchQuery = searchField.OnToolbarGUI (rect, searchQuery);
 					if (check.changed)
@@ -106,13 +105,13 @@ namespace DeformEditor
 
 			using (var scroll = new EditorGUILayout.ScrollViewScope (scrollPosition))
 			{
-				if (deformerAttributes == null || deformerAttributes.Count == 0)
+				if (DeformerAttributes == null || DeformerAttributes.Count == 0)
 					EditorGUILayout.LabelField ("No deformers found.", GUILayout.MinWidth (0));
 				else
 				{
 					filteredDeformerAttributes =
 					(
-						from d in deformerAttributes
+						from d in DeformerAttributes
 						where string.IsNullOrEmpty (searchQuery) || d.Name.ToLower ().Contains (searchQuery.ToLower ())
 						select d
 					).ToList ();
@@ -151,7 +150,7 @@ namespace DeformEditor
 			}
 		}
 
-		public void AddOrCreateDeformable ()
+		public static void AddOrCreateDeformable ()
 		{
 			var targets = Selection.gameObjects;
 
@@ -180,7 +179,7 @@ namespace DeformEditor
 			}
 		}
 
-		private Deformable CreateDeformable ()
+		private static Deformable CreateDeformable ()
 		{
 			var newObject = GameObject.CreatePrimitive (PrimitiveType.Sphere);
 			newObject.name = "Deformable Object";
@@ -205,7 +204,7 @@ namespace DeformEditor
 			return deformable;
 		}
 
-		public void CreateDeformerFromAttribute (DeformerAttribute attribute, bool autoAdd)
+		public static void CreateDeformerFromAttribute (DeformerAttribute attribute, bool autoAdd)
 		{
 			var selectedGameObjects = Selection.gameObjects;
 			if (selectedGameObjects == null || selectedGameObjects.Length == 0)
@@ -289,7 +288,7 @@ namespace DeformEditor
 			}
 		}
 
-		private IEnumerable<T> GetComponents<T> (GameObject[] objects) where T : Component
+		private static IEnumerable<T> GetComponents<T> (GameObject[] objects) where T : Component
 		{
 			for (int i = 0; i < objects.Length; i++)
 			{
@@ -299,7 +298,7 @@ namespace DeformEditor
 			}
 		}
 
-		private Vector3 GetAverageGameObjectPosition (GameObject[] gameObjects)
+		private static Vector3 GetAverageGameObjectPosition (GameObject[] gameObjects)
 		{
 			if (gameObjects == null || gameObjects.Length == 0)
 				return Vector3.zero;

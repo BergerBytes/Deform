@@ -16,6 +16,8 @@ A fully-featured deformer system for [Unity](https://unity3d.com/). Deform is mu
 
 ✔️ 40+ deformers!
 
+✔️ Meshes can be saved!
+
 ✔️ Easily extendable!
 
 ✔️ Works in worldspace!
@@ -23,12 +25,34 @@ A fully-featured deformer system for [Unity](https://unity3d.com/). Deform is mu
 ✔️ Custom editors and handles!
 
 
-## Documentation
-* [Installation](Documentation/Installation.md) (Important)
-* [Getting Started](Documentation/GettingStarted.md)
-* [Creating a Custom Deformer](Documentation/CustomDeformer.md)
+## [Documentation](https://github.com/keenanwoodall/Deform/wiki)
+* [Installation](https://github.com/keenanwoodall/Deform/wiki/Installation) (Important)
+* [Getting Started](https://github.com/keenanwoodall/Deform/wiki/Getting-Started)
+* [Creating a Custom Deformer](https://github.com/keenanwoodall/Deform/wiki/Creating-A-Custom-Deformer)
 
 You can find all the deformers [here,](../Code/Runtime/Mesh/Deformers) and all their editors [here.](../Code/Editor/Mesh/Deformers)
+
+## FAQ
+> Does Deform work with the new prefab system?
+
+Yes. Deform works seamlessly with nested prefabs and prefab variants.
+
+> Do deformers have to be on the object they are deforming?
+
+No. Because deformables require deformers be added manually, they can be anywhere in the scene and on any game object.
+
+> Can deformables share deformers?
+
+Yes. You can create a single deformer and add it to multiple deformables.
+
+> How do deformables handle instancing?
+
+Each deformable has it's own unique mesh. Duplicating and instantiating deformables shouldn't cause any issues.
+
+## Limitations
+Deform runs on the CPU. While it *is* incredibly fast, you should not expect to get performance comparable to vertex shaders. Because meshes are modified on the CPU each mesh has to be unique. From what I understand, this means each mesh will require a new draw call. Deform is not meant to be used at a massive scale. If you need to deform an entire world, tons of meshes, or an incredibly high poly model use vertex shaders. 
+
+**tldr:** Use shaders if you need speed, use Deform if you need modularity and ease-of-use.
 
 ## Acknowledgments
 * Thanks to [Thomas Ingram](https://twitter.com/vertexxyz) for going the extra-mile to help with editor scripting.
@@ -41,11 +65,11 @@ Thanks so much for checking out Deform! It's been my passion project since 2016 
 2. I wouldn't have been able to make this tool if the game-dev community wasn't so supportive. I want to give back to the community in some way.
 3. Now that it's open-source other people can contribute to the project! I think Deform is awesome right now, but there's always room for improvement and I'm excited to see what cool stuff people want to add!
 
-**If you work at, or know an awesome studio that is looking for an intern or junior developer, please reach out!**
+#### *If you work at, or know an awesome studio that is looking for a developer, please reach out!*
 
 [email](mailto:keenanwoodall@gmail.com) | [twitter](https://twitter.com/keenanwoodall) | [website](http://keenanwoodall.com)
 
-**If you like Deform, please consider donating!**
+#### If you like Deform, please consider donating!
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/KeenanWoodall)
 [![Donate](https://img.shields.io/badge/Donate-Kofi-green.svg)](https://ko-fi.com/keenanwoodall)

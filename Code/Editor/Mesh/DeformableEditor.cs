@@ -8,7 +8,7 @@ namespace DeformEditor
 	[CustomEditor (typeof (Deformable)), CanEditMultipleObjects]
 	public class DeformableEditor : Editor
 	{
-		private class Styles
+		private static class Styles
 		{
 			public static readonly GUIStyle WrappedLabel;
 
@@ -19,18 +19,16 @@ namespace DeformEditor
 			}
 		}
 
-		private class Content
+		private static class Content
 		{
 			public static readonly GUIContent UpdateMode = new GUIContent (text: "Update Mode", tooltip: "Auto: Gets updated by a manager.\nPause: Never updated or reset.\nStop: Mesh is reverted to it's undeformed state until mode is switched.\nCustom: Allows updates, but not from a Deformable Manager.");
 			public static readonly GUIContent NormalsRecalculation = new GUIContent (text: "Normals", tooltip: "Auto: Normals are auto calculated after the mesh is deformed; overwriting any changes made by deformers.\nNone: Normals aren't modified by the Deformable.");
 			public static readonly GUIContent BoundsRecalculation = new GUIContent (text: "Bounds", tooltip: "Auto: Bounds are recalculated for any deformers that need it, and at the end after all the deformers finish.\nNever: Bounds are never recalculated.\nOnce At The End: Deformers that needs updated bounds are ignored and bounds are only recalculated at the end.");
 			public static readonly GUIContent ColliderRecalculation = new GUIContent (text: "Collider", tooltip: "Auto: Collider's mesh is updated when the rendered mesh is updated.\nNone: Collider's mesh isn't updated.");
 			public static readonly GUIContent MeshCollider = new GUIContent (text: "Mesh Collider", tooltip: "The Mesh Collider to sync with the deformed mesh. To improve performance, try turning off different cooking options on the Mesh Collider (Especially 'Cook For Faster Simulation').");
-			public static readonly GUIContent ClearDeformers = new GUIContent (text: "Clear", tooltip: "Remove all deformers from the deformer list.");
-			public static readonly GUIContent CleanDeformers = new GUIContent (text: "Clean", tooltip: "Remove all null deformers from the deformer list.");
-			public static readonly GUIContent SaveObj = new GUIContent (text: "Save Obj", tooltip: "Save the current mesh as a .obj file in the project. (Doesn't support vertex colors)");
-			public static readonly GUIContent SaveAsset = new GUIContent (text: "Save Asset", tooltip: "Save the current mesh as a mesh asset file in the project.");
 			public static readonly GUIContent CustomBounds = new GUIContent (text: "Custom Bounds", tooltip: "The bounds used by the mesh when bounds recalculation is set to 'Custom.'");
+
+			public static readonly string ReadWriteNotEnableAlert = "Read/Write permissions must be enabled on the target mesh.";
 
 			public static readonly GUIContent[] UtilityToolbar =
 			{
@@ -141,6 +139,10 @@ namespace DeformEditor
 				var selectedIndex = GUILayout.Toolbar (-1, Content.UtilityToolbar, EditorStyles.miniButton, GUILayout.MinWidth (0));
 				switch (selectedIndex)
 				{
+					default:
+						throw new System.ArgumentException ($"No valid action for toolbar index {selectedIndex}.");
+					case -1:
+						break;
 					case 0:
 						Undo.RecordObjects (targets, "Cleared Deformers");
 						foreach (var t in targets)
@@ -156,7 +158,7 @@ namespace DeformEditor
 						{
 							var deformable = t as Deformable;
 
-							// C:/...Deform/Assets/
+							// C:/...<ProjectName>/Assets/
 							var projectPath = Application.dataPath + "/";
 							// We have to generate the full asset path starting from the Assets folder for GeneratorUniqueAssetPath to work,
 							var assetPath = EditorUtility.SaveFilePanelInProject ("Save Obj", $"{deformable.name}.obj", "obj", "");
@@ -180,11 +182,6 @@ namespace DeformEditor
 							var assetPath = EditorUtility.SaveFilePanelInProject ("Save Mesh Asset", $"{deformable.name}.asset", "asset", "");
 							if (string.IsNullOrEmpty (assetPath))
 								break;
-							// Now that we have a unique asset path we can remove the "Assets/" and ".obj" to get the unique name.
-							var fileName = assetPath;
-							// It's pretty gross, but it works and this code doesn't need to be performant.
-							fileName = fileName.Remove (0, 7);
-							fileName = fileName.Remove (fileName.Length - 4, 4);
 
 							AssetDatabase.CreateAsset (Instantiate (deformable.GetMesh ()), assetPath);
 							AssetDatabase.SaveAssets ();
@@ -217,6 +214,15 @@ namespace DeformEditor
 
 			serializedObject.ApplyModifiedProperties ();
 
+			foreach (var t in targets)
+			{
+				var deformable = t as Deformable;
+
+				var originalMesh = deformable.GetOriginalMesh ();
+				if (originalMesh != null && !originalMesh.isReadable)
+					EditorGUILayout.HelpBox (Content.ReadWriteNotEnableAlert, MessageType.Error);
+			}
+
 			EditorApplication.QueuePlayerLoopUpdate ();
 		}
 
@@ -228,6 +234,17 @@ namespace DeformEditor
 
 				DeformHandles.Bounds (deformable.GetMesh ().bounds, deformable.transform.localToWorldMatrix, DeformHandles.LineMode.LightDotted);
 			}
+		}
+
+		[MenuItem ("CONTEXT/Deformable/Strip")]
+		private static void Strip (MenuCommand command)
+		{
+			var deformable = (Deformable)command.context;
+
+			Undo.SetCurrentGroupName ("Strip Selected Deformables");
+			Undo.RecordObject (deformable, "Changed Assign Original Mesh On Disable");
+			deformable.assignOriginalMeshOnDisable = false;
+			Undo.DestroyObjectImmediate (deformable);
 		}
 	}
 }

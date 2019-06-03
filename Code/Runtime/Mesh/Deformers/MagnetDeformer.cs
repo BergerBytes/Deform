@@ -39,7 +39,7 @@ namespace Deform
 
 		public override JobHandle Process (MeshData data, JobHandle dependency = default (JobHandle))
 		{
-			if (Factor == 0f)
+			if (Mathf.Approximately (Factor, 0f))
 				return dependency;
 
 			var meshToAxis = DeformerUtils.GetMeshToAxisSpace (Center, data.Target.GetTransform ());
@@ -47,7 +47,7 @@ namespace Deform
 			return new MagnetJob
 			{
 				factor = Factor,
-				falloff = falloff,
+				falloff = Falloff,
 				meshToAxis = meshToAxis,
 				axisToMesh = meshToAxis.inverse,
 				vertices = data.DynamicNative.VertexBuffer
@@ -55,7 +55,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct MagnetJob : IJobParallelFor
+		public struct MagnetJob : IJobParallelFor
 		{
 			public float factor;
 			public float falloff;

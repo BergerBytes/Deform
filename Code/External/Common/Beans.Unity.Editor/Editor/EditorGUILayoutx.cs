@@ -98,8 +98,8 @@ namespace Beans.Unity.Editor
 
 		public class FoldoutContainerScope : System.IDisposable
 		{
-			public static GUIStyle DefaultContainerStyle;
-			public static GUIStyle DefaultLabelStyle;
+			private static readonly GUIStyle DefaultContainerStyle;
+			private static readonly GUIStyle DefaultLabelStyle;
 
 			static FoldoutContainerScope ()
 			{
@@ -107,16 +107,13 @@ namespace Beans.Unity.Editor
 				DefaultLabelStyle = new GUIStyle (EditorStyles.foldout);
 			}
 
-			private readonly string text;
-
-			public bool isOpen;
+			public bool isOpen { get; private set; }
 			private int lastIndentLevel = 0;
 
 			public FoldoutContainerScope (ref bool isOpen, string text) : this (ref isOpen, text, DefaultContainerStyle, DefaultLabelStyle) { }
 			public FoldoutContainerScope (ref bool isOpen, string text, GUIStyle containerStyle, GUIStyle labelStyle)
 			{
 				this.isOpen = isOpen;
-				this.text = text;
 				lastIndentLevel = EditorGUI.indentLevel;
 				EditorGUI.indentLevel = 1;
 				EditorGUILayout.BeginVertical (containerStyle);
@@ -128,7 +125,6 @@ namespace Beans.Unity.Editor
 			public FoldoutContainerScope (SerializedProperty isExpanded, string text, GUIStyle containerStyle, GUIStyle labelStyle)
 			{
 				this.isOpen = isExpanded.isExpanded;
-				this.text = text;
 				lastIndentLevel = EditorGUI.indentLevel;
 				EditorGUI.indentLevel = 1;
 				EditorGUILayout.BeginVertical (containerStyle);

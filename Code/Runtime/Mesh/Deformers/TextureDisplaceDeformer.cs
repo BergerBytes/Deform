@@ -126,7 +126,7 @@ namespace Deform
 			if (textureDirty)
 				ForceUpdateNativeData ();
 
-			if (Factor == 0f || Texture == null || !nativeTexture.IsCreated)
+			if (Mathf.Approximately (Factor, 0f) || Texture == null || !nativeTexture.IsCreated)
 				return dependency;
 
 			var meshToAxis = DeformerUtils.GetMeshToAxisSpace (Axis, data.Target.GetTransform ());
@@ -201,7 +201,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct WorldTextureDisplaceJob : IJobParallelFor
+		public struct WorldTextureDisplaceJob : IJobParallelFor
 		{
 			public float factor;
 			public bool repeat;
@@ -245,7 +245,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct WorldTextureDisplaceBilinearJob : IJobParallelFor
+		public struct WorldTextureDisplaceBilinearJob : IJobParallelFor
 		{
 			public float factor;
 			public bool repeat;
@@ -288,7 +288,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct UVTextureDisplaceJob : IJobParallelFor
+		public struct UVTextureDisplaceJob : IJobParallelFor
 		{
 			public float factor;
 			public bool repeat;
@@ -328,7 +328,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct UVTextureDisplaceBilinearJob : IJobParallelFor
+		public struct UVTextureDisplaceBilinearJob : IJobParallelFor
 		{
 			public float factor;
 			public bool repeat;
@@ -347,7 +347,6 @@ namespace Deform
 			public void Execute (int index)
 			{
 				var uv = uvs[index];
-				var textureSize = int2 (texture.width, texture.height);
 				var samplePosition = ((uv + offset) * tiling);
 
 				if (!repeat && OutsideTexture (samplePosition))

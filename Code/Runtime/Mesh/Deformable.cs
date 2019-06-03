@@ -271,13 +271,43 @@ namespace Deform
 			return handle.IsCompleted && (UpdateMode == UpdateMode.Auto || UpdateMode == UpdateMode.Custom) && isActiveAndEnabled && data.EnsureData ();
 		}
 
+		public void AddDeformer (Deformer deformer, bool active = true)
+		{
+			DeformerElements.Add (new DeformerElement (deformer, active));
+		}
+
+		public void RemoveDeformer (Deformer deformer)
+		{
+			for (int i = 0; i < DeformerElements.Count; i++)
+			{
+				var element = DeformerElements[i];
+				if (element.Component == deformer)
+				{
+					DeformerElements.RemoveAt (i);
+					i--;
+				}
+			}
+		}
+
+		public void ChangeMesh (Mesh mesh)
+		{
+			data.ChangeMesh (mesh);
+		}
+
 		/// <summary>
 		/// Returns the dynamic mesh.
 		/// </summary>
-		/// <returns></returns>
 		public Mesh GetMesh ()
 		{
 			return data.DynamicMesh;
+		}
+
+		/// <summary>
+		/// Returns the original mesh.
+		/// </summary>
+		public Mesh GetOriginalMesh ()
+		{
+			return data.OriginalMesh;
 		}
 
 		/// <summary>
@@ -295,11 +325,6 @@ namespace Deform
 		public bool HasTarget ()
 		{
 			return data.Target.Exists ();
-		}
-
-		public void ChangeMesh (Mesh mesh)
-		{
-			data.ChangeMesh (mesh);
 		}
 	}
 }

@@ -8,7 +8,7 @@ namespace DeformEditor
 	[CustomEditor (typeof (SkewDeformer)), CanEditMultipleObjects]
 	public class SkewDeformerEditor : DeformerEditor
 	{
-		private class Content
+		private static class Content
 		{
 			public static readonly GUIContent Factor = DeformEditorGUIUtility.DefaultContent.Factor;
 			public static readonly GUIContent Mode = new GUIContent (text: "Mode", tooltip: "Unlimited: The entire mesh is skewed.\nLimited: Only vertices between the bounds are skewed.");
@@ -44,8 +44,8 @@ namespace DeformEditor
 
 			properties = new Properties (serializedObject);
 
-			boundsHandle.handleCapFunction = DeformHandles.HandleCapFunction;
-			boundsHandle.drawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
+			boundsHandle.HandleCapFunction = DeformHandles.HandleCapFunction;
+			boundsHandle.DrawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
 		}
 
 		public override void OnInspectorGUI ()
@@ -79,13 +79,13 @@ namespace DeformEditor
 
 			if (skew.Mode == BoundsMode.Limited)
 			{
-				boundsHandle.handleColor = DeformEditorSettings.SolidHandleColor;
-				boundsHandle.screenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
+				boundsHandle.HandleColor = DeformEditorSettings.SolidHandleColor;
+				boundsHandle.ScreenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
 				if (boundsHandle.DrawHandle (skew.Top, skew.Bottom, skew.Axis, Vector3.up))
 				{
 					Undo.RecordObject (skew, "Changed Bounds");
-					skew.Top = boundsHandle.top;
-					skew.Bottom = boundsHandle.bottom;
+					skew.Top = boundsHandle.Top;
+					skew.Bottom = boundsHandle.Bottom;
 				}
 			}
 

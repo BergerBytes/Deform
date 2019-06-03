@@ -8,7 +8,7 @@ namespace DeformEditor
 	[CustomEditor (typeof (RippleDeformer)), CanEditMultipleObjects]
 	public class RippleDeformerEditor : DeformerEditor
 	{
-		private class Content
+		private static class Content
 		{
 			public static readonly GUIContent Frequency = new GUIContent (text: "Frequency", tooltip: "Higher values mean more ripples.");
 			public static readonly GUIContent Amplitude = new GUIContent (text: "Amplitude", tooltip: "The strength of the ripples,");
@@ -58,8 +58,8 @@ namespace DeformEditor
 
 			properties = new Properties (serializedObject);
 
-			boundsHandle.handleCapFunction = DeformHandles.HandleCapFunction;
-			boundsHandle.drawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
+			boundsHandle.HandleCapFunction = DeformHandles.HandleCapFunction;
+			boundsHandle.DrawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
 		}
 
 		public override void OnInspectorGUI ()
@@ -101,13 +101,13 @@ namespace DeformEditor
 
 			if (ripple.Mode == BoundsMode.Limited)
 			{
-				boundsHandle.handleColor = DeformEditorSettings.SolidHandleColor;
-				boundsHandle.screenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
+				boundsHandle.HandleColor = DeformEditorSettings.SolidHandleColor;
+				boundsHandle.ScreenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
 				if (boundsHandle.DrawHandle (ripple.OuterRadius, ripple.InnerRadius, ripple.Axis, Vector3.up))
 				{
 					Undo.RecordObject (ripple, "Changed Bounds");
-					ripple.OuterRadius = boundsHandle.top;
-					ripple.InnerRadius = boundsHandle.bottom;
+					ripple.OuterRadius = boundsHandle.Top;
+					ripple.InnerRadius = boundsHandle.Bottom;
 				}
 			}
 
@@ -160,7 +160,7 @@ namespace DeformEditor
 						Undo.RecordObject (ripple, "Changed Magnitude");
 						ripple.Amplitude = newPosition.z;
 					}
-					var offset = newPosition - ripple.Axis.position;
+
 					DeformHandles.Line (Vector3.zero, newPosition, DeformHandles.LineMode.LightDotted);
 				}
 			}

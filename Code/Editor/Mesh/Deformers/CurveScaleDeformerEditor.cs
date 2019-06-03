@@ -7,7 +7,7 @@ namespace DeformEditor
 	[CustomEditor (typeof (CurveScaleDeformer)), CanEditMultipleObjects]
 	public class CurveScaleDeformerEditor : DeformerEditor
 	{
-		private class Content
+		private static class Content
 		{
 			public static readonly GUIContent Factor = DeformEditorGUIUtility.DefaultContent.Factor;
 			public static readonly GUIContent Bias = new GUIContent (text: "Bias");
@@ -65,7 +65,8 @@ namespace DeformEditor
 
 			var curveScale = target as CurveScaleDeformer;
 
-			DeformHandles.Curve (curveScale.Curve, curveScale.Axis, curveScale.Factor * 0.5f, curveScale.Offset, curveScale.Bias * 0.5f);
+			var handleScale = new Vector3 (1f, 1f, curveScale.Axis.lossyScale.z);
+			DeformHandles.Curve (curveScale.Curve, curveScale.Axis.position, curveScale.Axis.rotation, handleScale, curveScale.Factor * 0.5f, curveScale.Offset, curveScale.Bias * 0.5f);
 		}
 	}
 }

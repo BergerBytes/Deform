@@ -51,7 +51,7 @@ namespace Deform
 
 		public override JobHandle Process (MeshData data, JobHandle dependency = default (JobHandle))
 		{
-			if (Radius == 0f || Factor == 0f)
+			if (Mathf.Approximately (Factor, 0f) || Mathf.Approximately (Radius, 0f))
 				return dependency;
 
 			var meshToAxis = DeformerUtils.GetMeshToAxisSpace (Axis, data.Target.GetTransform ());
@@ -82,7 +82,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct UnlimitedSpherifyJob : IJobParallelFor
+		public struct UnlimitedSpherifyJob : IJobParallelFor
 		{
 			public float factor;
 			public float radius;
@@ -102,7 +102,7 @@ namespace Deform
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct LimitedSpherifyJob : IJobParallelFor
+		public struct LimitedSpherifyJob : IJobParallelFor
 		{
 			public float factor;
 			public float radius;

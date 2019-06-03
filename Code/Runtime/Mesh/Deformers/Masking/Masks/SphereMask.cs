@@ -58,7 +58,7 @@ namespace Deform.Masking
 
 		public override JobHandle Process (MeshData data, JobHandle dependency = default)
 		{
-			if (OuterRadius == 0f)
+			if (Mathf.Approximately (OuterRadius, 0f))
 				return dependency;
 
 			var meshToAxis = DeformerUtils.GetMeshToAxisSpace (Axis, data.Target.GetTransform ());
@@ -88,7 +88,7 @@ namespace Deform.Masking
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct SphereMaskJob : IJobParallelFor
+		public struct SphereMaskJob : IJobParallelFor
 		{
 			public float factor;
 			public float innerRadius;
@@ -123,7 +123,7 @@ namespace Deform.Masking
 		}
 
 		[BurstCompile (CompileSynchronously = COMPILE_SYNCHRONOUSLY)]
-		private struct InvertedSphereMaskJob : IJobParallelFor
+		public struct InvertedSphereMaskJob : IJobParallelFor
 		{
 			public float factor;
 			public float innerRadius;

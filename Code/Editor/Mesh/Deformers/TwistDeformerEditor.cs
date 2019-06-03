@@ -11,7 +11,7 @@ namespace DeformEditor
 	{
 		private const float ANGLE_HANDLE_RADIUS = 1.25f;
 
-		private class Content
+		private static class Content
 		{
 			public static readonly GUIContent StartAngle = new GUIContent (text: "Start Angle", tooltip: "When mode is limited this is how many degrees the vertices are twisted at the bottom bounds. When unlimited the vertices are twisted based on the different between the start and end angle.");
 			public static readonly GUIContent EndAngle = new GUIContent (text: "End Angle", tooltip: "When mode is limited this is how many degrees the vertices are twisted at the top bounds. When unlimited the vertices are twisted based on the different between the start and end angle.");
@@ -52,9 +52,9 @@ namespace DeformEditor
 
 		private Properties properties;
 
-		private ArcHandle startAngleHandle = new ArcHandle ();
-		private ArcHandle endAngleHandle = new ArcHandle ();
-		private VerticalBoundsHandle boundsHandle = new VerticalBoundsHandle ();
+		private readonly ArcHandle startAngleHandle = new ArcHandle ();
+		private readonly ArcHandle endAngleHandle = new ArcHandle ();
+		private readonly VerticalBoundsHandle boundsHandle = new VerticalBoundsHandle ();
 
 		protected override void OnEnable ()
 		{
@@ -62,8 +62,8 @@ namespace DeformEditor
 
 			properties = new Properties (serializedObject);
 
-			boundsHandle.handleCapFunction = DeformHandles.HandleCapFunction;
-			boundsHandle.drawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
+			boundsHandle.HandleCapFunction = DeformHandles.HandleCapFunction;
+			boundsHandle.DrawGuidelineCallback = (a, b) => DeformHandles.Line (a, b, DeformHandles.LineMode.LightDotted);
 		}
 
 		public override void OnInspectorGUI ()
@@ -99,13 +99,13 @@ namespace DeformEditor
 
 			var twist = target as TwistDeformer;
 
-			boundsHandle.handleColor = DeformEditorSettings.SolidHandleColor;
-			boundsHandle.screenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
+			boundsHandle.HandleColor = DeformEditorSettings.SolidHandleColor;
+			boundsHandle.ScreenspaceHandleSize = DeformEditorSettings.ScreenspaceSliderHandleCapSize;
 			if (boundsHandle.DrawHandle (twist.Top, twist.Bottom, twist.Axis, Vector3.forward))
 			{
 				Undo.RecordObject (twist, "Changed Bounds");
-				twist.Top = boundsHandle.top;
-				twist.Bottom = boundsHandle.bottom;
+				twist.Top = boundsHandle.Top;
+				twist.Bottom = boundsHandle.Bottom;
 			}
 
 			DrawAngleHandles (twist);
